@@ -1,0 +1,3 @@
+http://aldopc:8080/xtee-proxy/wsdl?subsystemCode=adsv5&serviceCode=ADSnormal&version=v2
+
+http://aldopc:8080/xtee-proxy/wsdl?subsystemCode=etak&serviceCode=getCountry&version=v1

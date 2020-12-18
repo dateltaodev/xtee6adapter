@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+    xmlns:xrd="http://x-road.eu/xsd/xroad.xsd"
+    xmlns:tns="#servicetns#"
+    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    targetNamespace="#servicetns#">
+    <wsdl:types>

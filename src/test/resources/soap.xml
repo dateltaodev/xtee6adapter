@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
+  <SOAP-ENV:Header xmlns:xrd="http://x-road.ee/xsd/x-road.xsd">
+    <xrd:consumer>assert</xrd:consumer>
+    <xrd:producer>maakataster</xrd:producer>
+    <xrd:userId>EE30101010007</xrd:userId>
+    <xrd:id>6cae248568b3db7e97ff784673a4d38c5906bee0</xrd:id>
+    <xrd:service>maakataster.uploadMime.v1</xrd:service>
+    <xrd:issue>T1</xrd:issue>
+    <xrd:position>insener</xrd:position>
+  </SOAP-ENV:Header>
+  <SOAP-ENV:Body>
+    <ns4:ADSnormalResponse xmlns:ns4="http://adsv5.x-road.ee/producer/">
+      <request>52ed0ffbf27fc34759dce05d0e7bed2302876cec</request>
+      <response>
+        <vastus>-1</vastus>
+        <muuinfo href="cid:793340a8216da081f3d785bcc74c0f74" />
+      </response>
+    </ns4:ADSnormalResponse>
+  </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>

@@ -1,0 +1,5 @@
+In pom.xml file for each profile:
+- <conf.proxy.url> this adapter access url, used in wsdl <soap:address location="<conf.proxy.url>" /> 
+- <application.configuration> configuration zip file full path and filename (optional then on class path)
+- <application.logging.pathbase> full path for java logger and request/response files
+- <application.logging.max-age-months> how many months keep request/response files in <application.logging.pathbase>/requests/ 

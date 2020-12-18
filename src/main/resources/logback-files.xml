@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE included>
+<included>
+
+  <!-- # http://logback.qos.ch/manual/layouts.html#AccessPatternLayout -->
+  <property
+    name="encoder-pattern"
+    value="%d{HH:mm:ss.SSS} %-5level [%thread] %logger - %msg%ex{4}%n" />
+  <property
+    name="error-pattern"
+    value="%d [%thread] %logger%n- %msg%n%ex%n" />
+
+  <!-- # keep 30 days' worth of history -->
+  <property
+    name="file-maxHistory"
+    value="30" />
+
+  <appender
+    name="APPFILE"
+    class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <fileNamePattern>@application.logging.pathbase@/%d.app.@logback.configuration.fileformat@</fileNamePattern>
+      <maxHistory>${file-maxHistory}</maxHistory>
+    </rollingPolicy>
+    <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+      <level>INFO</level>
+    </filter>
+    <encoder>
+      <pattern>${encoder-pattern}</pattern>
+    </encoder>
+  </appender>
+  <appender
+    name="DEBUGFILE"
+    class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <fileNamePattern>@application.logging.pathbase@/%d.debug.@logback.configuration.fileformat@</fileNamePattern>
+      <maxHistory>${file-maxHistory}</maxHistory>
+    </rollingPolicy>
+    <encoder>
+      <pattern>${encoder-pattern}</pattern>
+    </encoder>
+  </appender>
+  <appender
+    name="ERRORFILE"
+    class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <fileNamePattern>@application.logging.pathbase@/%d.error.@logback.configuration.fileformat@</fileNamePattern>
+      <maxHistory>${file-maxHistory}</maxHistory>
+    </rollingPolicy>
+    <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+      <level>ERROR</level>
+    </filter>
+    <encoder>
+      <pattern>${error-pattern}</pattern>
+    </encoder>
+  </appender>
+  <appender
+    name="TIMERFILE"
+    class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <fileNamePattern>@application.logging.pathbase@/%d.access.@logback.configuration.fileformat@</fileNamePattern>
+      <maxHistory>${file-maxHistory}</maxHistory>
+    </rollingPolicy>
+    <encoder>
+      <pattern>%d{HH:mm:ss.SSS} [%thread] - %msg%n</pattern>
+    </encoder>
+  </appender>
+
+ 
+  <logger
+    name="ee.datel.xtee.proxy.server.RequestTimerListener"
+    level="INFO"
+    additivity="false">
+    <appender-ref ref="TIMERFILE" />
+  </logger>
+  <logger
+    name="ee.datel.xtee"
+    level="DEBUG">
+  </logger>
+
+
+  <root level="INFO">
+    <appender-ref ref="DEBUGFILE" />
+    <appender-ref ref="APPFILE" />
+    <appender-ref ref="ERRORFILE" />
+  </root>
+</included>

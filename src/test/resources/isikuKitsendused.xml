@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
+  <SOAP-ENV:Header
+    xmlns:xrd="http://x-road.eu/xsd/xroad.xsd"
+    xmlns:id="http://x-road.eu/xsd/identifiers">
+    <xrd:client id:objectType="SUBSYSTEM">
+      <id:xRoadInstance>ee-dev</id:xRoadInstance>
+      <id:memberClass>COM</id:memberClass>
+      <id:memberCode>10324057</id:memberCode>
+      <id:subsystemCode>generic-system</id:subsystemCode>
+    </xrd:client>
+    <xrd:service id:objectType="SERVICE">
+      <id:xRoadInstance>ee-dev</id:xRoadInstance>
+      <id:memberClass>GOV</id:memberClass>
+      <id:memberCode>70003098</id:memberCode>
+      <id:subsystemCode>mis</id:subsystemCode>
+      <id:serviceCode>isikuKitsendused</id:serviceCode>
+      <id:serviceVersion>v1</id:serviceVersion>
+    </xrd:service>
+    <xrd:userId>EE12345678901</xrd:userId>
+    <xrd:id>4894e35d-bf0f-44a6-867a-8e51f1daa7e0</xrd:id>
+    <xrd:protocolVersion>4.0</xrd:protocolVersion>
+  </SOAP-ENV:Header>
+  <SOAP-ENV:Body>
+    <m:isikuKitsendused xmlns:m="http://www.maaamet.ee">
+      <kinnistu>String</kinnistu>
+      <katastritunnus>String</katastritunnus>
+      <kood>String</kood>
+    </m:isikuKitsendused>
+  </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>
