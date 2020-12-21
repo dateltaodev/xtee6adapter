@@ -3,9 +3,6 @@ package ee.datel.xtee.proxy.response;
 import ee.datel.xtee.proxy.request.ProxyRequest;
 import ee.datel.xtee.proxy.util.ResponseMessageInputStream;
 
-import org.apache.commons.io.input.BOMInputStream;
-import org.slf4j.LoggerFactory;
-
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,6 +11,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.Vector;
+
+import org.apache.commons.io.input.BOMInputStream;
+import org.slf4j.LoggerFactory;
 
 public class ServiceResponse implements AutoCloseable {
   private final Path filePath = Files.createTempFile("xresponse-", ".xml");
@@ -32,11 +32,17 @@ public class ServiceResponse implements AutoCloseable {
     this.contentType = contentType;
     this.contentEncoding = contentEncoding;
     multipart = contentType != null && contentType.indexOf("boundary=") > 0;
-    source = new ResponseMessageInputStream(response, multipart || contentType != null && contentType.indexOf("/xml") > 0);
+    source =
+        new ResponseMessageInputStream(response, multipart || contentType != null && contentType.indexOf("/xml") > 0);
   }
 
   /**
    * Constructs response stream.
+   * 
+   * @param adapter request target
+   * @param client request source
+   * @return response
+   * @throws IOException read error
    */
   public InputStream getProxyResponseStream(final ServiceClient adapter, final ProxyRequest client) throws IOException {
     if (source.isFault()) {

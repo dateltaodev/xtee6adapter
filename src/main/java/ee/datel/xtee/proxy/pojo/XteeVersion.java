@@ -13,6 +13,9 @@ public class XteeVersion {
 
   /**
    * Determines XTEE version.
+   * 
+   * @return HttpHeader subtype
+   * @throws SoapFaultException Missing protocolVersion
    */
   public Class<? extends XteeHeader> getXteeHeaderClass() throws SoapFaultException {
     if (protocolVersion == null) {

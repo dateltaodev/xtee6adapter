@@ -2,10 +2,6 @@ package ee.datel.xtee.proxy.server;
 
 import ee.datel.xtee.proxy.server.logger.ConversiationDeleter;
 
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,6 +34,10 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import javax.servlet.ServletContextEvent;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Server configuration provider.
@@ -78,7 +78,8 @@ public class ServerConfiguration {
 
   /**
    * Retrieves subsystem's services.
-   *
+   * 
+   * @param subsystem subsystem name
    * @return services array, when non existing subsystem, returns empty array
    */
   public String[] getSubsystemServices(final String subsystem) {
@@ -124,14 +125,14 @@ public class ServerConfiguration {
   public Path getTodaysPath() {
     Calendar now = Calendar.getInstance();
     if (day.get() != now.get(Calendar.DAY_OF_MONTH) || month.get() != now.get(Calendar.MONTH)
-                || year.get() != now.get(Calendar.YEAR)) {
+        || year.get() != now.get(Calendar.YEAR)) {
       lock.lock();
       try {
         if (day.get() != now.get(Calendar.DAY_OF_MONTH) || month.get() != now.get(Calendar.MONTH)
-                    || year.get() != now.get(Calendar.YEAR)) {
+            || year.get() != now.get(Calendar.YEAR)) {
           Path todays = logPath.resolve(Integer.toString(now.get(Calendar.YEAR)))
-                      .resolve(Integer.toString(now.get(Calendar.MONTH) + 1))
-                      .resolve(Integer.toString(now.get(Calendar.DAY_OF_MONTH)));
+              .resolve(Integer.toString(now.get(Calendar.MONTH) + 1))
+              .resolve(Integer.toString(now.get(Calendar.DAY_OF_MONTH)));
           try {
             Files.createDirectories(todays);
           } catch (IOException e) {
@@ -196,7 +197,7 @@ public class ServerConfiguration {
     String[] max = new String[] {""};
     try (final Stream<Path> stream = Files.list(getTodaysPath())) {
       stream.sorted().filter(p -> pattern.matcher(p.getFileName().toString()).matches())
-                  .forEach(p -> max[0] = p.getFileName().toString());
+          .forEach(p -> max[0] = p.getFileName().toString());
       if (max[0].length() > 6) {
         initial = Integer.valueOf(max[0].substring(2, max[0].length() - 4));
       }
@@ -212,16 +213,18 @@ public class ServerConfiguration {
 
   private Reader getPropertiesReader(final CharsetDecoder utf8Decoder) throws IOException {
     return new BufferedReader(new InputStreamReader(
-                confFileSystem == null ? getClass().getClassLoader().getResourceAsStream("/configuration/xtee-proxy.properties")
-                            : Files.newInputStream(confFileSystem.getPath("xtee-proxy.properties")),
-                utf8Decoder));
+        confFileSystem == null ? getClass().getClassLoader().getResourceAsStream("/configuration/xtee-proxy.properties")
+            : Files.newInputStream(confFileSystem.getPath("xtee-proxy.properties")),
+        utf8Decoder));
   }
 
   /**
    * Retrieves InputStream of the file from configuration files.
-   *
+   * 
+   * @param fileName file name
+   * @param fileDir file path
    * @return path. Returns null if not found.
-   * @throws IOException
+   * @throws IOException write error
    */
   public InputStream getXsdStream(final String fileName, final String fileDir) throws IOException {
     final InputStream out;
@@ -229,7 +232,7 @@ public class ServerConfiguration {
       out = getZipXsdInputStream(fileName, fileDir);
     } else {
       out = fileDir == null ? getClass().getClassLoader().getResourceAsStream("/configuration/" + fileName)
-                  : getClass().getClassLoader().getResourceAsStream("/configuration/" + fileDir + "/" + fileName);
+          : getClass().getClassLoader().getResourceAsStream("/configuration/" + fileDir + "/" + fileName);
     }
     return out;
   }

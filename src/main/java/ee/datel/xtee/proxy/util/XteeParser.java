@@ -3,15 +3,13 @@ package ee.datel.xtee.proxy.util;
 import ee.datel.xtee.proxy.pojo.XteeHeader;
 import ee.datel.xtee.proxy.pojo.XteeVersion;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
 public class XteeParser {
   private static final XteeParser ITEM = new XteeParser();
@@ -32,6 +30,7 @@ public class XteeParser {
    * Parses XTEE version.
    *
    * @param xml XTEE header byte[]
+   * @return version
    * @throws IOException parse error
    */
   public XteeVersion parseVersion(final byte[] xml) throws IOException {
@@ -40,9 +39,11 @@ public class XteeParser {
   }
 
   /**
-   * Parser proxy request's header.
+   * Parse proxy request's header.
    *
    * @param xml XTEE header byte[]
+   * @param type XteeHeader subclass
+   * @return header
    * @throws IOException parse error
    */
   public XteeHeader parseHeader(final byte[] xml, final Class<? extends XteeHeader> type) throws IOException {
@@ -50,11 +51,20 @@ public class XteeParser {
     return result;
   }
 
-  public <T> T parse(final InputStream in, final Class<T> type) throws JsonParseException, JsonMappingException, IOException {
+  /**
+   * Parse request.
+   * 
+   * @param <T> XteeHeader subclass
+   * @param in input stream
+   * @param type XteeHeader subclass
+   * @return type
+   * @throws IOException parse error
+   */
+  public <T> T parse(final InputStream in, final Class<T> type) throws IOException {
     return mapper.readValue(in, type);
   }
 
-  private <T> T parse(final byte[] xml, final Class<T> type) throws JsonParseException, JsonMappingException, IOException {
+  private <T> T parse(final byte[] xml, final Class<T> type) throws IOException {
     return mapper.readValue(new ByteArrayInputStream(xml), type);
   }
 }

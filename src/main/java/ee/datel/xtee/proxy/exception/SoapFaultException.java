@@ -65,11 +65,13 @@ public class SoapFaultException extends IOException {
 
   /**
    * Constructor.
+   * 
+   * @param fault fault
    */
   public SoapFaultException(final Fault fault) {
     super(fault.getFaultcode() + " " + fault.getFaultstring());
     code = fault.getFaultcode().indexOf("Cons") >= 0 || fault.getFaultcode().indexOf("Clie") >= 0 ? FaultCode.CLIENT
-                : FaultCode.SERVER;
+        : FaultCode.SERVER;
     message = fault.getFaultstring();
     actor = fault.getFaultactor();
     detail = fault.getFaulttDetail();

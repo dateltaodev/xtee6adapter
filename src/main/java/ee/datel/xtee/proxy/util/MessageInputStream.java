@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PushbackInputStream;
 import java.nio.charset.StandardCharsets;
+
 import org.apache.commons.io.input.BOMInputStream;
 
 /**
@@ -43,8 +44,7 @@ public class MessageInputStream implements AutoCloseable {
    * @throws IOException read error
    */
   public MessageInputStream(final InputStream source, final boolean isXml) throws IOException {
-    this.source =
-        new PushbackInputStream(isXml ? new BOMInputStream(source) : source, BUFFERLENGTH);
+    this.source = new PushbackInputStream(isXml ? new BOMInputStream(source) : source, BUFFERLENGTH);
     getPreamble();
     getXteeHeader();
   }
@@ -98,6 +98,9 @@ public class MessageInputStream implements AutoCloseable {
 
   /**
    * Reads request XTEE header.
+   * 
+   * @return XTEE SOAP header
+   * @throws IOException request read error
    */
   public byte[] getXteeHeader() throws IOException {
     if (xteeHeader == null) {
@@ -119,6 +122,11 @@ public class MessageInputStream implements AutoCloseable {
 
   /**
    * Swings to XTEE request body.
+   * 
+   * @param tagName tag name
+   * @param onLevel depth in xml structure
+   * @return in request SOAP body
+   * @throws IOException request read error
    */
   public InputStream getRequestBody(final String tagName, final int onLevel) throws IOException {
     swingToTag(tagName.getBytes(StandardCharsets.UTF_8), onLevel);
@@ -168,6 +176,11 @@ public class MessageInputStream implements AutoCloseable {
 
   /**
    * Swing to tag.
+   * 
+   * @param tagName tag name
+   * @param onLevel depth in xml structure
+   * @return in request SOAP body
+   * @throws IOException request read error
    */
   public InputStream getRequestTag(final String tagName, final int onLevel) throws IOException {
     swingToTag(tagName.getBytes(StandardCharsets.UTF_8), onLevel);

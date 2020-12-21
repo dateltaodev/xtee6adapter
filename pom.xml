@@ -1,5 +1,4 @@
-<project
-  xmlns="http://maven.apache.org/POM/4.0.0"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
@@ -7,19 +6,38 @@
   <artifactId>xtee-proxy</artifactId>
   <version>1.0.7</version>
   <packaging>war</packaging>
-  <name>xtee6 server switch</name>
+  <name>${project.groupId}:${project.artifactId}</name>
+  <description>Java library for building X-Road v6 Adapter Servers.</description>
+  <url>https://github.com/dateltaodev/xtee6adapter</url>
   <licenses>
     <license>
       <name>MIT License</name>
       <url>http://www.opensource.org/licenses/mit-license.php</url>
     </license>
   </licenses>
+  <developers>
+    <developer>
+      <name>Aldo Aiaste</name>
+      <email>aldo.aiaste@datel.ee</email>
+      <organization>AS Datel</organization>
+      <organizationUrl>http://www.datel.ee</organizationUrl>
+    </developer>
+  </developers>
   <scm>
-    <connection>scm:svn:http://127.0.0.1/dummy</connection>
-    <developerConnection>scm:svn:https://127.0.0.1/dummy</developerConnection>
-    <tag>HEAD</tag>
-    <url>http://127.0.0.1/dummy</url>
+    <connection>scm:svn:https://github.com/dateltaodev/xtee6adapter.git</connection>
+    <developerConnection>scm:svn:https://github.com/dateltaodev/xtee6adapter.git</developerConnection>
+    <url>https://github.com/dateltaodev/xtee6adapter/tree/main</url>
   </scm>
+  <distributionManagement>
+    <snapshotRepository>
+      <id>ossrh</id>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+    </snapshotRepository>
+    <repository>
+      <id>ossrh</id>
+      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+    </repository>
+  </distributionManagement>
   <properties>
     <slf4j.version>1.7.21</slf4j.version>
     <java.version>1.8</java.version>
@@ -32,7 +50,6 @@
     <logback.configuration.fileformat>log.gz</logback.configuration.fileformat>
   </properties>
   <dependencies>
-    <!-- xml-pojo parser -->
     <dependency>
       <groupId>com.fasterxml.jackson.dataformat</groupId>
       <artifactId>jackson-dataformat-xml</artifactId>
@@ -64,7 +81,6 @@
       <artifactId>commons-lang3</artifactId>
       <version>3.9</version>
     </dependency>
-    <!-- logging -->
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
@@ -112,29 +128,9 @@
     </resources>
     <plugins>
       <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>buildnumber-maven-plugin</artifactId>
-        <version>1.3</version>
-        <executions>
-          <execution>
-            <phase>validate</phase>
-            <goals>
-              <goal>create</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <format>{0,number,'.'}</format>
-          <items>
-            <item>buildNumber0</item>
-          </items>
-          <doCheck>false</doCheck>
-          <doUpdate>false</doUpdate>
-        </configuration>
-      </plugin>
-      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-resources-plugin</artifactId>
-        <version>2.6</version>
+        <version>3.2.0</version>
         <configuration>
           <delimiters>
             <delimiter>@</delimiter>
@@ -142,16 +138,44 @@
         </configuration>
       </plugin>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>3.2.1</version>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <goals>
+              <goal>jar-no-fork</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>3.2.0</version>
+        <executions>
+          <execution>
+            <id>attach-javadocs</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.3</version>
+        <version>3.8.1</version>
         <configuration>
           <source>${java.version}</source>
           <target>${java.version}</target>
         </configuration>
       </plugin>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
-        <version>2.5</version>
+        <version>3.3.1</version>
         <configuration>
           <failOnMissingWebXml>false</failOnMissingWebXml>
           <archive>
@@ -159,6 +183,33 @@
               <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
             </manifest>
           </archive>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-gpg-plugin</artifactId>
+        <version>1.6</version>
+        <executions>
+          <execution>
+            <id>sign-artifacts</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>sign</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.sonatype.plugins</groupId>
+        <artifactId>nexus-staging-maven-plugin</artifactId>
+        <version>1.6.8</version>
+        <extensions>true</extensions>
+        <configuration>
+          <serverId>ossrh</serverId>
+          <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+          <!-- Set this to true and the release will automatically proceed and sync to Central Repository 
+            will follow -->
+          <autoReleaseAfterClose>false</autoReleaseAfterClose>
         </configuration>
       </plugin>
     </plugins>
@@ -184,34 +235,7 @@
       <properties>
         <conf.name>arendus</conf.name>
         <conf.proxy.url>http://xena.datel.ee:8080/xtee-proxy</conf.proxy.url>
-        <build.finalName>${project.artifactId}##${project.version}${buildNumber}</build.finalName>
-        <logback.configuration.fileformat>log</logback.configuration.fileformat>
-      </properties>
-    </profile>
-    <profile>
-      <id>maadev</id>
-      <properties>
-        <conf.name>maadev</conf.name>
-        <conf.proxy.url>http://mixerdev.webdb.maaamet.ee:8080/xtee-proxy</conf.proxy.url>
-        <build.finalName>${project.artifactId}##${project.version}.maadev</build.finalName>
-        <logback.configuration.fileformat>log</logback.configuration.fileformat>
-      </properties>
-    </profile>
-    <profile>
-      <id>test</id>
-      <properties>
-        <conf.name>test</conf.name>
-        <conf.proxy.url>http://mixertest.webdb.maaamet.ee:8080/xtee-proxy</conf.proxy.url>
-        <build.finalName>${project.artifactId}##${project.version}.test</build.finalName>
-        <logback.configuration.fileformat>log</logback.configuration.fileformat>
-      </properties>
-    </profile>
-    <profile>
-      <id>prod</id>
-      <properties>
-        <conf.name>prod</conf.name>
-        <conf.proxy.url>http://mixerlivebal.webdb.maaamet.ee/xtee-proxy</conf.proxy.url>
-        <build.finalName>${project.artifactId}##${project.version}.prod</build.finalName>
+        <build.finalName>${project.artifactId}##${project.version}</build.finalName>
         <logback.configuration.fileformat>log</logback.configuration.fileformat>
       </properties>
     </profile>

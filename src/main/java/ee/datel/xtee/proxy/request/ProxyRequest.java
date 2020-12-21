@@ -10,17 +10,17 @@ import ee.datel.xtee.proxy.server.ServerConfiguration;
 import ee.datel.xtee.proxy.util.MessageInputStream;
 import ee.datel.xtee.proxy.util.XteeParser;
 
-import org.apache.commons.lang3.StringEscapeUtils;
-import org.apache.http.HttpMessage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.SequenceInputStream;
 import java.util.Vector;
 
 import javax.servlet.ServletRequest;
+
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.http.HttpMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class ProxyRequest implements AutoCloseable {
   private static final Logger logger = LoggerFactory.getLogger(ProxyRequest.class);
@@ -63,7 +63,7 @@ public abstract class ProxyRequest implements AutoCloseable {
       }
     }
     throw new SoapFaultException(FaultCode.CLIENT, "Unsupported content type", "Content-Type",
-                contentType == null ? "" : StringEscapeUtils.escapeXml10(contentType));
+        contentType == null ? "" : StringEscapeUtils.escapeXml10(contentType));
   }
 
   private String contentType;
@@ -81,6 +81,7 @@ public abstract class ProxyRequest implements AutoCloseable {
    *
    * @param adapter service client
    * @return adapter server request
+   * @throws IOException procession error
    */
   public InputStream getInputStream(final ServiceClient adapter) throws IOException {
     InputStream header = adapter.getClientHeader(getXteeHeader(), getServiceXmlns());
@@ -103,12 +104,14 @@ public abstract class ProxyRequest implements AutoCloseable {
    * Parses XTEE header from proxy request.
    *
    * @return header
+   * @throws IOException procession error
    */
   public XteeHeader getXteeHeader() throws IOException {
     if (xteeHeader == null) {
       XteeVersion version = XteeParser.getXteeParser().parseVersion(source.getXteeHeader());
       xteeHeader = XteeParser.getXteeParser().parseHeader(source.getXteeHeader(), version.getXteeHeaderClass());
-      prefix = ServerConfiguration.PRFX + xteeHeader.getServiceSubsystemCode() + "." + xteeHeader.getServiceCode() + ".";
+      prefix =
+          ServerConfiguration.PRFX + xteeHeader.getServiceSubsystemCode() + "." + xteeHeader.getServiceCode() + ".";
       if (xteeHeader.getServiceVersion() == null) {
         xteeHeader.setServiceVersion(configuration.getProxyPropertie(prefix + "version"));
       }
@@ -120,6 +123,7 @@ public abstract class ProxyRequest implements AutoCloseable {
    * Determines adapter service type.
    *
    * @return appropriate client
+   * @throws IOException procession error
    */
   public ServiceClient getServiceClient() throws IOException {
     type = configuration.getProxyPropertie(prefix + "mode");

@@ -5,6 +5,7 @@ import ee.datel.xtee.proxy.exception.SoapFaultException;
 import ee.datel.xtee.proxy.pojo.XteeHeader;
 import ee.datel.xtee.proxy.request.ProxyRequest;
 import ee.datel.xtee.proxy.util.MessageInputStream;
+
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -15,6 +16,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpMessage;
 import org.apache.http.HttpResponse;
@@ -66,16 +68,14 @@ public abstract class ServiceClient {
     final ConnectionSocketFactory plainsf = PlainConnectionSocketFactory.getSocketFactory();
     final LayeredConnectionSocketFactory sslsf = SSLConnectionSocketFactory.getSocketFactory();
     final Registry<ConnectionSocketFactory> registry =
-        RegistryBuilder.<ConnectionSocketFactory>create().register("http", plainsf)
-            .register("https", sslsf).build();
+        RegistryBuilder.<ConnectionSocketFactory>create().register("http", plainsf).register("https", sslsf).build();
     final PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager(registry);
     cm.setMaxTotal(100);
     cm.setDefaultMaxPerRoute(20);
-    final RequestConfig requestConfig =
-        RequestConfig.custom().setConnectTimeout(proxyConnectTimeout)
-            .setSocketTimeout(proxySocketTimeout).setRedirectsEnabled(false).build();
-    httpClient = HttpClients.custom().setConnectionManager(cm)
-        .setDefaultRequestConfig(requestConfig).disableCookieManagement().build();
+    final RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(proxyConnectTimeout)
+        .setSocketTimeout(proxySocketTimeout).setRedirectsEnabled(false).build();
+    httpClient = HttpClients.custom().setConnectionManager(cm).setDefaultRequestConfig(requestConfig)
+        .disableCookieManagement().build();
   }
 
   /**
@@ -101,14 +101,17 @@ public abstract class ServiceClient {
 
   /**
    * Performs request.
+   * 
+   * @param request request
+   * @param proxyRequest request data
+   * @return response
+   * @throws IOException process error
    */
-  public ServiceResponse doRequest(final InputStream request, final ProxyRequest proxyRequest)
-      throws IOException, SoapFaultException {
+  public ServiceResponse doRequest(final InputStream request, final ProxyRequest proxyRequest) throws IOException {
     final InputStreamEntity entity;
     InputStream requestStream = null;
     if (logger.isTraceEnabled()) {
-      Path path = Paths.get(System.getProperty("java.io.tmpdir"),
-          "sent-" + Thread.currentThread().getName() + ".xml");
+      Path path = Paths.get(System.getProperty("java.io.tmpdir"), "sent-" + Thread.currentThread().getName() + ".xml");
       Files.copy(request, path);
       requestStream = Files.newInputStream(path);
       entity = new InputStreamEntity(request);
@@ -136,8 +139,7 @@ public abstract class ServiceClient {
       final ServiceResponse response;
       if (status >= HttpStatus.SC_BAD_REQUEST && status < HttpStatus.SC_INTERNAL_SERVER_ERROR) {
         String message = adapterResponse.getStatusLine().getReasonPhrase();
-        logger.error("{} Status: {} {}", url, Integer.toString(status), message,
-            new IOException(message));
+        logger.error("{} Status: {} {}", url, Integer.toString(status), message, new IOException(message));
         throw new SoapFaultException(FaultCode.SERVER, "" + status + " - " + message);
       } else if (status >= HttpStatus.SC_INTERNAL_SERVER_ERROR) {
         String message = extractErrorMessage(adapterResponse);
@@ -162,8 +164,7 @@ public abstract class ServiceClient {
     } catch (InterruptedIOException e) {
       logger.warn("Timeout: {}ms: {} {}", Long.toString(System.currentTimeMillis() - start),
           proxyRequest.getXteeHeader().getFullName(), url);
-      throw new SoapFaultException(FaultCode.SERVER,
-          "Timeout " + (System.currentTimeMillis() - start) / 1000 + " sec");
+      throw new SoapFaultException(FaultCode.SERVER, "Timeout " + (System.currentTimeMillis() - start) / 1000 + " sec");
     } catch (ClientProtocolException e) {
       final Throwable ex = getCause(e);
       logger.error("{}\n\t{}", url, ex.getMessage(), ex);
@@ -171,16 +172,14 @@ public abstract class ServiceClient {
     } catch (IOException e) {
       if (!e.getMessage().contains("Connection reset by peer")) {
         final Throwable ex = getCause(e);
-        logger.warn("{} {}\n\tException: {}", proxyRequest.getXteeHeader().getFullName(), url,
-            ex.getMessage());
+        logger.warn("{} {}\n\tException: {}", proxyRequest.getXteeHeader().getFullName(), url, ex.getMessage());
         throw new SoapFaultException(FaultCode.SERVER, ex.getMessage(), ex.getClass().getName());
       } else {
         throw e;
       }
     } catch (Exception e) {
       final Throwable ex = getCause(e);
-      logger.error("{} {}\n\tException: {}", proxyRequest.getXteeHeader().getFullName(), url,
-          e.getMessage(), e);
+      logger.error("{} {}\n\tException: {}", proxyRequest.getXteeHeader().getFullName(), url, e.getMessage(), e);
       throw new SoapFaultException(FaultCode.SERVER, ex.getMessage(), ex.getClass().getName());
     } finally {
       post.reset();
@@ -206,8 +205,7 @@ public abstract class ServiceClient {
     } else {
       try (InputStream in = result.getContent()) {
         if (in != null) {
-          try (BufferedReader br =
-              new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))) {
+          try (BufferedReader br = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))) {
             String ln;
             while ((ln = br.readLine()) != null) {
               if (sb.length() > 0) {
@@ -241,19 +239,18 @@ public abstract class ServiceClient {
 
   public abstract InputStream getClientHeader(XteeHeader header, String xmlns);
 
-  public abstract InputStream getClientBody(MessageInputStream inputStream, String serviceCode)
-      throws IOException;
+  public abstract InputStream getClientBody(MessageInputStream inputStream, String serviceCode) throws IOException;
 
   public abstract InputStream getEnvelopeEnd(XteeHeader header);
 
-  protected abstract ServiceResponse parseResponse(InputStream inp, String contentType,
-      String contentEncoding) throws IOException;
+  protected abstract ServiceResponse parseResponse(InputStream inp, String contentType, String contentEncoding)
+      throws IOException;
 
   protected abstract void addAdapterHeaders(HttpMessage post, XteeHeader header);
 
   protected abstract String getAdapterUrl(ProxyRequest proxyRequest);
 
-  public abstract InputStream getAdapterResponseBody(MessageInputStream inputStream,
-      String serviceCode) throws IOException;
+  public abstract InputStream getAdapterResponseBody(MessageInputStream inputStream, String serviceCode)
+      throws IOException;
 
 }

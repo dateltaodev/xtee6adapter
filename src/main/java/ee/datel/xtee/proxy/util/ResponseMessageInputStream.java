@@ -1,6 +1,7 @@
 package ee.datel.xtee.proxy.util;
 
 import ee.datel.xtee.proxy.exception.SoapFaultException;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,8 +17,7 @@ public class ResponseMessageInputStream extends MessageInputStream {
 
   private boolean fault;
 
-  public ResponseMessageInputStream(final InputStream source, final boolean isXml)
-      throws IOException {
+  public ResponseMessageInputStream(final InputStream source, final boolean isXml) throws IOException {
     super(source, isXml);
   }
 
@@ -27,14 +27,17 @@ public class ResponseMessageInputStream extends MessageInputStream {
 
   /**
    * Builds new fault response.
+   * 
+   * @return SOAP Fault
+   * @throws IOException read error
    */
   public InputStream getFaultInputStream() throws IOException {
     if (!fault) {
       return Constants.EMPTY;
     }
-    Fault fault = XteeParser.getXteeParser()
-        .parse(new SequenceInputStream(getPreambleInputStream(), source), Fault.class);
-    throw new SoapFaultException(fault);
+    Fault xfault =
+        XteeParser.getXteeParser().parse(new SequenceInputStream(getPreambleInputStream(), source), Fault.class);
+    throw new SoapFaultException(xfault);
   }
 
   @Override

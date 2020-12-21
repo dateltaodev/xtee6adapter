@@ -1,11 +1,11 @@
 package ee.datel.xtee.proxy.util;
 
-import org.apache.commons.lang3.StringEscapeUtils;
-import org.apache.commons.lang3.StringUtils;
-
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Stack;
+
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * XML writer.
@@ -27,6 +27,9 @@ public class XmlTagWriter implements AutoCloseable {
 
   /**
    * Writes xml comment.
+   * 
+   * @param coment comment text
+   * @throws IOException write error
    */
   public void writeComment(final String coment) throws IOException {
     wrt.write("\n<!-- ");
@@ -47,8 +50,8 @@ public class XmlTagWriter implements AutoCloseable {
    * @param attributes null-able
    * @throws IOException write error
    */
-  public void writeValueTag(final String prefix, final String name, final String value, final TagAttribute... attributes)
-              throws IOException {
+  public void writeValueTag(final String prefix, final String name, final String value,
+      final TagAttribute... attributes) throws IOException {
     if (StringUtils.isEmpty(value)) {
       writeClosedTag(prefix, name, attributes);
     } else {
@@ -62,12 +65,14 @@ public class XmlTagWriter implements AutoCloseable {
     }
   }
 
-  private void writeClosedTag(final String prefix, final String name, final TagAttribute... attributes) throws IOException {
+  private void writeClosedTag(final String prefix, final String name, final TagAttribute... attributes)
+      throws IOException {
     writetheTag(prefix, name, attributes);
     wrt.write("/>");
   }
 
-  private void writetheTag(final String prefix, final String name, final TagAttribute... attributes) throws IOException {
+  private void writetheTag(final String prefix, final String name, final TagAttribute... attributes)
+      throws IOException {
     wrt.write('<');
     if (prefix != null) {
       wrt.write(prefix);

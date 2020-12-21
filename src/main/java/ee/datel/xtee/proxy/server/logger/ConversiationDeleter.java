@@ -14,11 +14,12 @@ import java.time.ZoneOffset;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Removed request/response report when age > then "application.logging.max-age" months.
+ * Removed request/response report when age &gt; then "application.logging.max-age" months.
  *
  * @author aldoa
  *
@@ -29,6 +30,9 @@ public class ConversiationDeleter {
 
   /**
    * Creates request/response registry old files deleter.
+   * 
+   * @param logPath path to log files
+   * @param months logs months
    */
   public ConversiationDeleter(final Path logPath, final String months) {
     final Path tempdir = logPath;
@@ -45,8 +49,7 @@ public class ConversiationDeleter {
           Files.walkFileTree(tempdir, new SimpleFileVisitor<Path>() {
 
             @Override
-            public FileVisitResult visitFile(final Path file, final BasicFileAttributes attrs)
-                throws IOException {
+            public FileVisitResult visitFile(final Path file, final BasicFileAttributes attrs) throws IOException {
               if (Thread.interrupted()) {
                 return FileVisitResult.TERMINATE;
               }
@@ -61,14 +64,12 @@ public class ConversiationDeleter {
             }
 
             @Override
-            public FileVisitResult visitFileFailed(final Path file, final IOException ex)
-                throws IOException {
+            public FileVisitResult visitFileFailed(final Path file, final IOException ex) throws IOException {
               return FileVisitResult.SKIP_SUBTREE;
             }
 
             @Override
-            public FileVisitResult postVisitDirectory(final Path dir, final IOException exc)
-                throws IOException {
+            public FileVisitResult postVisitDirectory(final Path dir, final IOException exc) throws IOException {
               if (exc == null) {
                 if (Thread.interrupted() || dir.equals(tempdir)) {
                   return FileVisitResult.TERMINATE;
